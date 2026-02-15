@@ -1,17 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(BouncingBall C)
+project(App LANGUAGES CXX)
 
-set(CMAKE_C_STANDARD 23)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_C_STANDARD_REQUIRED ON)
+add_subdirectory(game)
+add_subdirectory(main)
 
-file(GLOB SOURCES game/source/*.c)
-
-add_executable(${PROJECT_NAME} main/main.c ${SOURCES})
-
-target_include_directories(${PROJECT_NAME} PRIVATE game/include)
-
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
-
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib m)
+install(TARGETS ${PROJECT_NAME} DESTINATION /usr/local/bin)

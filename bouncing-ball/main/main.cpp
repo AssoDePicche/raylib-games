@@ -2,11 +2,17 @@
 #include <raymath.h>
 #include <stddef.h>
 
-#include "ball.h"
+#include <game/ball.h>
 
 #define MAX_BALLS 32
 
-__attribute((constructor)) static void setup(void) {
+int main(void) {
+  Ball *balls[MAX_BALLS];
+
+  size_t size = 0;
+
+  balls[size++] = CreateBall();
+
   InitWindow(640, 640, "Bouncing Balls");
 
   SetTargetFPS(60);
@@ -14,16 +20,6 @@ __attribute((constructor)) static void setup(void) {
   SetExitKey(KEY_Q);
 
   SetRandomSeed(0);
-}
-
-__attribute((destructor)) static void teardown(void) { CloseWindow(); }
-
-int main(void) {
-  struct Ball *balls[MAX_BALLS];
-
-  size_t size = 0;
-
-  balls[size++] = Ball();
 
   while (!WindowShouldClose()) {
     BeginDrawing();
@@ -31,7 +27,7 @@ int main(void) {
     ClearBackground(WHITE);
 
     if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && size < MAX_BALLS) {
-      balls[size++] = Ball();
+      balls[size++] = CreateBall();
     }
 
     if (IsKeyPressed(KEY_R)) {
@@ -41,7 +37,7 @@ int main(void) {
 
       size = 0;
 
-      balls[size++] = Ball();
+      balls[size++] = CreateBall();
     }
 
     for (size_t i = 0; i < size; ++i) {
@@ -50,14 +46,14 @@ int main(void) {
           continue;
         }
 
-        Collide(balls[i], balls[j]);
+        balls[i]->Collide(balls[j]);
       }
 
-      UpdateBall(balls[i], GetFrameTime());
+      balls[i]->Update(GetFrameTime());
     }
 
     for (size_t index = 0; index < size; ++index) {
-      DrawBall(balls[index]);
+      balls[index]->Draw();
     }
 
     const char *copyright = "AssoDePicche © 2025";
@@ -74,6 +70,8 @@ int main(void) {
 
     EndDrawing();
   }
+
+  CloseWindow();
 
   for (size_t index = 0; index < size; ++index) {
     FreeBall(balls[index]);
